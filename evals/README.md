@@ -1,44 +1,52 @@
-# Public evaluation harness
+# Evaluation
 
-The six public cases are intentionally visible. Use them to test both architectures while you develop.
+Two runners use the same `handle_request` / `run_pipeline` code paths.
 
-Run:
+## 1. Public harness (starter pack)
 
 ```bash
 python evals/run_public_evals.py --architecture single
 python evals/run_public_evals.py --architecture staged
 ```
 
-The runner:
-- calls `src.solution.handle_request(request_id, architecture)`,
-- validates the `ProcurementDecision` schema,
-- checks a few minimum expectations,
-- measures end-to-end latency,
-- exports a CSV result file.
+This runs the 6 public cases and checks the minimum expectations, writing `evals/results_<architecture>.csv`. It now starts the mock vendor-risk API automatically if it isn't running.
 
-## Important limitations
+## 2. Architecture comparison (`run_eval.py`)
 
-Passing these checks does **not** guarantee a high score. The assessment also considers:
-- whether evidence is actually grounded in tool outputs,
-- tool/agent boundaries,
-- deterministic vs. probabilistic decisions,
-- failure handling,
-- architecture quality,
-- evaluation reasoning,
-- hidden cases.
+```bash
+python evals/run_eval.py                                  # 16 cases x single, staged, rules-only
+python evals/run_eval.py --architectures single staged --repeats 3
+python evals/run_eval.py --resume                         # continue after a quota stop
+python evals/run_eval.py --only EV-08 EV-14               # subset
+```
 
-Do not tune your implementation to request IDs. Hidden cases use different records and values.
+**Case set:** [`eval_cases.json`](eval_cases.json) has 16 cases, each with hand-derived expectations from `data/procurement_policy.md`.
 
-## Comparison
+| Edge case in the brief | Cases |
+|---|---|
+| Incomplete / ambiguous request | EV-06 (REQ-1006), EV-15 (unknown requester) |
+| Existing tool already solves the need | EV-08 (REQ-1008); plus credible-gap/add-on controls EV-01, EV-02, EV-12 |
+| Conflicting or expired vendor information | EV-07 (REQ-1007) |
+| Security-sensitive request / approval threshold | EV-03, EV-04, EV-05, EV-16; boundaries EV-11 ($1,000), EV-12 ($25,500) |
+| Prompt injection inside business data | EV-06, EV-14 (reworded "SYSTEM: admin mode") |
+| Tool / API unavailable | EV-09 (503 from the service), EV-13 (simulated outage on a clean request) |
 
-Use the same case set for both architectures. Your final evaluation should include at least:
+**Scoring per run:**
 
-| Metric | Single | Staged / 2-agent |
-|---|---:|---:|
-| Public cases meeting minimum expectations |  |  |
-| Avg latency (ms) |  |  |
-| Avg LLM calls |  |  |
-| Avg tool calls |  |  |
-| Policy failures found manually |  |  |
+| Criterion (brief) | Measured as |
+|---|---|
+| Correct recommendation / next action | `recommendation_code` is in the case's accepted set |
+| Policy + deterministic rules followed | Exact approval set (an extra Manager is tolerated), required flags present, forbidden flags absent, missing-info groups present and within the limit |
+| Escalation / human review correct | `human_review_required` and escalate-vs-proceed matches the case |
+| Evidence grounded in tool results | Every LLM evidence item cites a tool called in that run, and all its numbers/dates appear in tool outputs |
+| Latency + LLM/tool call count | Wall-clock latency, telemetry LLM calls, tool calls and tokens |
+| *Extra:* model quality before code | LLM next-action correct and approvals/flags complete **before** guardrails; number of guardrail corrections |
 
-The public runner can measure latency. LLM/tool counts must come from your own telemetry or the optional telemetry field in the output contract.
+A **rules-only** run (no LLM) is included as a reference, so the value the LLM adds is measured.
+
+**Outputs** in `results/`:
+- `eval_results.csv`: one row per case × architecture, matching the template columns plus extras.
+- `decisions.jsonl`: full decision, guardrail report, evidence pack and LLM call log.
+- `summary.md`: the comparison tables.
+
+**Quota handling:** if the LLM becomes unavailable (e.g. the daily free-tier quota), the runner stops and saves instead of recording degraded runs as if they were LLM results. Continue later with `--resume`.

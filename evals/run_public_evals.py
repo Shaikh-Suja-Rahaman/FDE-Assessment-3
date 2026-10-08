@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.contracts import ProcurementDecision
+from src.mock_service import ensure_running
 from src.solution import handle_request
 
 
@@ -67,6 +68,9 @@ def main() -> None:
     parser.add_argument('--architecture', choices=['single','staged'], default='single')
     args = parser.parse_args()
 
+    # Without the mock vendor-risk API every vendor would look 'unavailable'; start it if needed.
+    if not ensure_running():
+        print("WARNING: mock vendor-risk API is not reachable; vendor checks will report 'unavailable'.")
     cases = json.loads((ROOT/'evals'/'public_cases.json').read_text(encoding='utf-8'))
     rows = []
     print(f"\nPublic evaluation - architecture={args.architecture}\n")

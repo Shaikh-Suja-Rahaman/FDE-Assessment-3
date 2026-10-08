@@ -14,6 +14,15 @@ class RunTelemetry(BaseModel):
     llm_calls: int | None = None
     tool_calls: int | None = None
     tool_names: list[str] = Field(default_factory=list)
+    # Optional extensions (backward compatible).
+    architecture: str | None = None
+    model: str | None = None
+    latency_ms: float | None = None
+    llm_input_tokens: int | None = None
+    llm_output_tokens: int | None = None
+    recommendation_code: str | None = None
+    guardrail_overrides: list[str] = Field(default_factory=list)
+    degraded_mode: bool = False
 
 
 class ProcurementDecision(BaseModel):

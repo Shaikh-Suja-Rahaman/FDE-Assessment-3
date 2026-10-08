@@ -1,0 +1,17 @@
+case_id,request_id,edge_case,architecture,repeat,recommendation_code,case_pass,correct_next_action,policy_followed,human_escalation_correct,grounded_evidence,approvals_correct,flags_correct,missing_info_correct,latency_ms,llm_calls,tool_calls,input_tokens,output_tokens,degraded,model,llm_raw_correct_next_action,llm_raw_policy_agreement,llm_evidence_proposed,llm_evidence_grounded,guardrail_overrides,guardrail_corrections,evidence_items,notes
+EV-01,REQ-1001,baseline,rules,0,proceed_to_approval_routing,True,True,True,True,True,True,True,True,13.5,0,7,0,0,False,,,,0,0,0,0,7,code=proceed_to_approval_routing
+EV-02,REQ-1002,existing tool + new vendor,rules,0,route_for_specialist_review,True,True,True,True,True,True,True,True,7.0,0,7,0,0,False,,,,0,0,0,0,9,code=route_for_specialist_review
+EV-03,REQ-1003,security-sensitive,rules,0,route_for_specialist_review,True,True,True,True,True,True,True,True,5.7,0,7,0,0,False,,,,0,0,0,0,8,code=route_for_specialist_review
+EV-04,REQ-1004,security-sensitive,rules,0,route_for_specialist_review,True,True,True,True,True,True,True,True,5.1,0,7,0,0,False,,,,0,0,0,0,10,code=route_for_specialist_review
+EV-05,REQ-1005,approval threshold + budget,rules,0,route_for_specialist_review,True,True,True,True,True,True,True,True,5.0,0,7,0,0,False,,,,0,0,0,0,8,code=route_for_specialist_review
+EV-06,REQ-1006,incomplete + prompt injection,rules,0,request_more_information,True,True,True,True,True,True,True,True,5.1,0,7,0,0,False,,,,0,0,0,0,7,code=request_more_information
+EV-07,REQ-1007,conflicting / expired vendor info,rules,0,manual_review_required,True,True,True,True,True,True,True,True,4.4,0,7,0,0,False,,,,0,0,0,0,9,code=manual_review_required
+EV-08,REQ-1008,existing tool solves the need,rules,0,proceed_to_approval_routing,False,False,True,False,True,True,True,True,4.0,0,7,0,0,False,,,,0,0,0,0,7,code=proceed_to_approval_routing
+EV-09,REQ-1009,tool / API unavailable,rules,0,manual_review_required,True,True,True,True,True,True,True,True,3.9,0,7,0,0,False,,,,0,0,0,0,7,code=manual_review_required
+EV-10,REQ-1010,baseline,rules,0,proceed_to_approval_routing,True,True,True,True,True,True,True,True,4.0,0,7,0,0,False,,,,0,0,0,0,7,code=proceed_to_approval_routing
+EV-11,SYN-01,approval threshold boundary,rules,0,proceed_to_approval_routing,True,True,True,True,True,True,True,True,3.7,0,7,0,0,False,,,,0,0,0,0,7,code=proceed_to_approval_routing
+EV-12,SYN-02,approval threshold boundary,rules,0,proceed_to_approval_routing,True,True,True,True,True,True,True,True,3.6,0,7,0,0,False,,,,0,0,0,0,6,code=proceed_to_approval_routing
+EV-13,SYN-03,tool / API unavailable,rules,0,manual_review_required,True,True,True,True,True,True,True,True,3.0,0,7,0,0,False,,,,0,0,0,0,8,code=manual_review_required
+EV-14,SYN-04,prompt injection in business data,rules,0,proceed_to_approval_routing,True,True,True,True,True,True,True,True,3.6,0,7,0,0,False,,,,0,0,0,0,8,code=proceed_to_approval_routing
+EV-15,SYN-05,incomplete / ambiguous request,rules,0,request_more_information,True,True,True,True,True,True,True,True,3.1,0,6,0,0,False,,,,0,0,0,0,5,code=request_more_information
+EV-16,SYN-06,security-sensitive + unknown vendor,rules,0,route_for_specialist_review,True,True,True,True,True,True,True,True,3.3,0,7,0,0,False,,,,0,0,0,0,8,code=route_for_specialist_review
